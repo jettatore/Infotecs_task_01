@@ -1,3 +1,0 @@
-new word
-new line
-new string
