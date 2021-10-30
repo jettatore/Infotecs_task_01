@@ -1,2 +1,4 @@
+
+next lines from master branch:
 just some word, like bla-bla-bla
 let's try to stash
