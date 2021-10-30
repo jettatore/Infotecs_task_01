@@ -1,2 +1,1 @@
-some words
-editet in branch vetka
+just some word, like bla-bla-bla
