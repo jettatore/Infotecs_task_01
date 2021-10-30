@@ -1,2 +1,1 @@
-some words
-editet in branch vetka
+branch - vetka
