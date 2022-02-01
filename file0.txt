@@ -1,4 +1,0 @@
-none
-word
-first
-second
