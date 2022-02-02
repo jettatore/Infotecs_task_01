@@ -113,11 +113,11 @@ void* ProcessData(void*) {
 
     while(true) {
         cout << "I'm waiting..." << endl;
-        string data = gData.GetData();
-        int sum = SumFigures(data);
-        cout << data << ", sum = " << sum << endl;
+//        string data = gData.GetData();
+//        int sum = SumFigures(data);
+//        cout << data << ", sum = " << sum << endl;
 	std::stringstream ss;
-	ss << sum;
+	ss << SumFigures(gData.GetData());
 	std::string word = ss.str();
 	int sd = send(s, word.c_str(), sizeof(word), 0);
     }
