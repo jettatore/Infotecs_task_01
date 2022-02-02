@@ -117,7 +117,7 @@ void* ProcessData(void*) {
         int sum = SumFigures(data);
         cout << data << ", sum = " << sum << endl;
 	std::stringstream ss;
-	ss << sum << '\n';
+	ss << sum;
 	std::string word = ss.str();
 	int sd = send(s, word.c_str(), sizeof(word), 0);
     }
