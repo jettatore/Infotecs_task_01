@@ -1,18 +1,27 @@
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <stdio.h>
+//#include <stdio.h>
+//#include <string>
 #include <cstring>
-#include <netdb.h>
 #include <iostream>
-#include <string>
-#include <algorithm>
-#include <mutex>
-#include <pthread.h>
-#include <condition_variable>
 #include <sstream>
+#include <algorithm>
 
-using namespace std;
+//#include <arpa/inet.h>
+//#include <sys/socket.h>
+//#include <netinet/in.h>
+#include <netdb.h>
+
+//#include <mutex>
+//#include <pthread.h>
+#include <condition_variable>
+
+using std::string;
+using std::mutex;
+using std::condition_variable;
+using std::lock_guard;
+using std::unique_lock;
+using std::stoi;
+using std::cin;
+using std::cout;
 
 class Data {
 private:
@@ -70,20 +79,12 @@ void* PreparateData(void*) {
             ReplaceEven(str);
             gData.SetData(str);
         } else {
-            cout << "error" << endl;
+            cout << "error" << '\n';
         }
     }
 }
 
-//struct sockaddr_in local;
-
 void* ProcessData(void*) {
-//    int s = socket(AF_INET, SOCK_STREAM, 0);
-//    local.sin_family = AF_INET;
-//    local.sin_port = htons(1234);
-//    local.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-//    inet_ntop(AF_INET, "127.0.0.1", &(local.sin_addr));
-//    int cn = connect(s, (struct sockaddr*)&local, sizeof(local));
 
     struct addrinfo hints;
     struct addrinfo* servinfo;
@@ -102,24 +103,12 @@ void* ProcessData(void*) {
     int cn = connect(s, servinfo->ai_addr, servinfo->ai_addrlen);
     printf("Connect: %i\n", cn);
 
-//    std::string word;
-//    while(true) {
-//	std::cin >> word;
-//	word += "\n";
-//	int sd = send(s, word.c_str(), sizeof(word), 0);
-//	std::this_thread::sleep_for(1000ms);
-//	if (sd <= 0) break;
-//    }
-
     while(true) {
-        cout << "I'm waiting..." << endl;
-//        string data = gData.GetData();
-//        int sum = SumFigures(data);
-//        cout << data << ", sum = " << sum << endl;
-	std::stringstream ss;
-	ss << SumFigures(gData.GetData());
-	std::string word = ss.str();
-	int sd = send(s, word.c_str(), sizeof(word), 0);
+        cout << "I'm waiting..." << '\n';
+        std::stringstream ss;
+        ss << SumFigures(gData.GetData());
+        std::string word = ss.str();
+        int sd = send(s, word.c_str(), sizeof(word), 0);
     }
     freeaddrinfo(servinfo);
 }
