@@ -9,6 +9,7 @@
 //#include <sys/socket.h>
 //#include <netinet/in.h>
 #include <netdb.h>
+#include <unistd.h>
 
 //#include <mutex>
 //#include <pthread.h>
@@ -45,8 +46,8 @@ Data gData;
 
 bool Check(const string& str) {
     return  str.size() < 64 &&
-            str[0] >= 0x30 &&
-            str[str.size() - 1] <= 0x39;
+            str[0] <= 0x39 &&
+            str[str.size() - 1] >= 0x30;
 }
 
 void ReplaceEven(string& str) {
@@ -74,17 +75,21 @@ void* PreparateData(void*) {
     string str = "";
     while(true) {
         cin >> str;
-        sort(str.begin(), str.end());
+        sort(str.rbegin(), str.rend());
         if (Check(str)) {
             ReplaceEven(str);
             gData.SetData(str);
         } else {
-            cout << "error" << '\n';
+            cout << "Only ciphers allowed and length no more than 64 symbols" << '\n';
         }
     }
 }
 
 void* ProcessData(void*) {
+
+    int sckt;
+    int cnct;
+    int snd;
 
     struct addrinfo hints;
     struct addrinfo* servinfo;
@@ -94,23 +99,40 @@ void* ProcessData(void*) {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    int ga = getaddrinfo(NULL, "1234", &hints, &servinfo);
-    printf("GetAddrInfo: %i\n", ga);
+    int gai = getaddrinfo(NULL, "1234", &hints, &servinfo);
+    if (gai != 0) {
+        printf("getaddrinfo: %s\n", gai_strerror(gai));
+        exit(1);
+    }
 
-    int s = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
-    printf("Socket: %i\n", s);
+    sckt = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
+    if (sckt == -1) {
+        perror("socket");
+        exit(1);
+    }
 
-    int cn = connect(s, servinfo->ai_addr, servinfo->ai_addrlen);
-    printf("Connect: %i\n", cn);
+    cnct = connect(sckt, servinfo->ai_addr, servinfo->ai_addrlen);
+    if (cnct == -1) {
+        perror("connect (server didn't started?)");
+        close(sckt);
+        exit(1);
+    }
 
     while(true) {
-        cout << "I'm waiting..." << '\n';
+	string data(gData.GetData());
+	printf("Data: %s\n", data.c_str());
         std::stringstream ss;
-        ss << SumFigures(gData.GetData());
-        std::string word = ss.str();
-        int sd = send(s, word.c_str(), sizeof(word), 0);
+        ss << SumFigures(data);
+        std::string sm = ss.str();
+        cnct = connect(sckt, servinfo->ai_addr, servinfo->ai_addrlen);
+        snd = send(sckt, sm.c_str(), sizeof(sm), 0);
+        if (snd == 0) {
+            perror("send");
+            exit(1);
+        }
     }
     freeaddrinfo(servinfo);
+    close(sckt);
 }
 
 int main(){
