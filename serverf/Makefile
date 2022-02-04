@@ -8,3 +8,6 @@ connection.o:	connection.cpp connection.h
 
 server.o:	server.cpp
 	g++ -c server.cpp
+
+clean:
+	rm -fr *.o

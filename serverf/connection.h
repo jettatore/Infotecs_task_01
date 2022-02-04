@@ -9,7 +9,7 @@ using std::string;
 class Connection {
 
 public:
-    Connection() {}
+    Connection():optval(1) {}
 
     void Init();
     void Receive();
@@ -19,7 +19,7 @@ public:
 private:
     int gai;
     int sckt;
-    int optval = 1;
+    int optval;
     int acpt;
     int rcv;
 
